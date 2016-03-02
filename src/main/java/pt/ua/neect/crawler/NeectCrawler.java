@@ -71,7 +71,7 @@ public class NeectCrawler implements Crawler {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-        if (!posts.isEmpty()) {
+        if (posts.isEmpty()) {
             page++;
             try {
                 org.jsoup.nodes.Document acPage = Jsoup.connect(getUrl(page)).cookies(cookies).get();
@@ -83,7 +83,7 @@ public class NeectCrawler implements Crawler {
 
                     String author = au.getElementsByTag("strong").first().getElementsByTag("a").text();
                     String text = au.text();
-                    text = text.substring(text.indexOf("»"));
+                    text = text.substring(text.indexOf("»")+1).trim();
 
                     LocalTime date = LocalTime.parse(text, dtformatter);
                     String post_id = post.id();
@@ -107,8 +107,8 @@ public class NeectCrawler implements Crawler {
                 .cookies(loginPage.cookies())
                 .method(Method.POST)
                 .execute();
-        System.out.println(csrf_token);
-        System.out.println(res.parse().getElementsByTag("form"));
+      //  System.out.println(csrf_token);
+      //  System.out.println(res.parse().getElementsByTag("form"));
         return res.cookies();
     }
 
@@ -119,7 +119,7 @@ public class NeectCrawler implements Crawler {
         if (page > 1) {
             url.append("&start=").append((page - 1) * 10);
         }
-        System.out.println(url);
+        
         return url.toString();
 
     }
@@ -129,7 +129,7 @@ public class NeectCrawler implements Crawler {
 
             org.jsoup.nodes.Document firstPage = Jsoup.connect(getUrl(1)).cookies(cookies).get();
 
-           // System.out.println(firstPage);
+            //System.out.println(firstPage);
             String text = firstPage.getElementsByClass("pagination").first().text();
             Scanner sctext = new Scanner(text.trim());
             int nPosts = sctext.nextInt();
