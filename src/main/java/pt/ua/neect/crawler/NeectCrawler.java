@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Queue;
@@ -30,7 +31,7 @@ public class NeectCrawler implements Crawler {
 
     private final Map<String, String> cookies;
 
-    public final static DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm");
+    public final static DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm", Locale.forLanguageTag("pt-PT"));
     private final Queue<Document> posts;
     private int page;
     private final int forum;
@@ -83,7 +84,7 @@ public class NeectCrawler implements Crawler {
 
                     String author = au.getElementsByTag("strong").first().getElementsByTag("a").text();
                     String text = au.text();
-                    text = text.substring(text.indexOf("»")+1).trim();
+                    text = text.substring(text.indexOf("»")+1).trim().toLowerCase();
 
                     LocalTime date = LocalTime.parse(text, dtformatter);
                     String post_id = post.id();
