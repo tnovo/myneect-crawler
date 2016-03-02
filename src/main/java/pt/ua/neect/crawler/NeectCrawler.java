@@ -87,7 +87,7 @@ public class NeectCrawler implements Crawler {
 
                     LocalTime date = LocalTime.parse(text, dtformatter);
                     String post_id = post.id();
-                    Document d = new Document(post_id, author, date);
+                    Document d = new Document(post_id, author, contents, date);
                     posts.offer(d);
                 }
             } catch (IOException ex) {
@@ -100,11 +100,11 @@ public class NeectCrawler implements Crawler {
     private Map<String, String> getCookies(String user, String pass) throws
             IOException {
         String url = "http://neect.ieeta.pt/member/login";
-        org.jsoup.nodes.Document loginPage = Jsoup.connect(url).get();
-        String csrf_token = loginPage.getElementById("login__csrf_token").val();
+        Connection.Response loginPage = Jsoup.connect(url).method(Method.GET).execute();
+        String csrf_token = loginPage.parse().getElementById("login__csrf_token").val();
         Connection.Response res = Jsoup.connect(url)
                 .data("login[username]", user, "login[password]", pass, "login[_csrf_token]", csrf_token)
-                .followRedirects(true)
+                .cookies(loginPage.cookies())
                 .method(Method.POST)
                 .execute();
         System.out.println(csrf_token);
