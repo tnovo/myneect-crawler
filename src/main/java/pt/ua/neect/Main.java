@@ -5,11 +5,10 @@
  */
 package pt.ua.neect;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multisets;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import pt.ua.neect.crawler.Crawler;
 import pt.ua.neect.crawler.NeectCrawler;
 import pt.ua.neect.document.Document;
@@ -28,11 +27,18 @@ public class Main {
         // TODO code application logic here
         String user = args[0];
         String pass = args[1];
-        Crawler cr = new NeectCrawler("http://neect.ieeta.pt/forum/viewtopic.php?f=12&t=2534", user, pass);
+        Multiset<String> countAnswers = HashMultiset.<String>create();
+        Crawler cr = new NeectCrawler("http://neect.ieeta.pt/forum/viewtopic.php?f=15&t=2487", user, pass);
         while (cr.hasNext()) {
             Document d = cr.next();
-            System.out.println(d.getAuthor() + " : " + d.getContents());
+            countAnswers.add(d.getAuthor());
+           /* if (!d.getAuthor().equals("TiagoNovo")) {
+                System.out.println(d.getAuthor() + " : " + d.getContents());
+            }*/
+        }
+        for (String i : Multisets.copyHighestCountFirst(countAnswers).elementSet()) {
+            System.out.println(i + " | " + countAnswers.count(i));
         }
     }
-
+    
 }
